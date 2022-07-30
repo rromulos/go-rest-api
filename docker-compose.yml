@@ -1,0 +1,23 @@
+version: "3.5"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: .dockerfile
+    image: github.com/rromulos/gorestapi_database
+    container_name: gorestapi_database
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "25432:5432"
+    environment:
+      POSTGRES_DB: books
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      PGDATA: /var/lib/postgresql/data/gorestapi_database
+    volumes:
+      - gorestapi_database:/var/lib/postgresql/data
+
+volumes:
+  gorestapi_database:
