@@ -93,3 +93,27 @@ func DeleteBook(c *gin.Context) {
 
 	c.Status(204)
 }
+
+func UpdateBook(c *gin.Context) {
+	db := database.GetDatabase()
+	var p models.Book	
+	err := c.ShouldBindJSON(&p)
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"Error": "Error binding Json " + err.Error(),
+		})
+		return
+	}
+
+	err = db.Save(&p).Error
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"Error": "Error saving the book: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, p)
+}

@@ -14,6 +14,7 @@ func ConfigRoutes(router *gin.Engine) *gin.Engine {
 			books.GET("/", controllers.GetAllBooks)
 			books.POST("/", controllers.CreateBook)
 			books.DELETE("/:id", controllers.DeleteBook)
+			books.PUT("/", controllers.UpdateBook)
 		}
 	}
 
