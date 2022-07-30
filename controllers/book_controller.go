@@ -1,8 +1,15 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"strconv"
 
-func ShowBook(c *gin.Context) {
+	"github.com/gin-gonic/gin"
+	"github.com/rromulos/go-rest-api/database"
+	"github.com/rromulos/go-rest-api/models"
+)
+
+func GetBook(c *gin.Context) {
+	db := database.GetDatabase()
 	id := c.Param("id")
 	newid, err := strconv.Atoi(id)
 	if err != nil {
@@ -12,9 +19,8 @@ func ShowBook(c *gin.Context) {
 		return
 	}
 
-	database := database.getDatabase()
 	var book models.Book
-	err = database.First(&book, newid).Error
+	err = db.First(&book, newid).Error
 	if err != nil {
 		c.JSON(400, gin.H{
 			"Error": "Book not found: " + err.Error(),
@@ -23,4 +29,43 @@ func ShowBook(c *gin.Context) {
 		return
 	}
 	c.JSON(200, book)
+}
+
+func CreateBook(c *gin.Context) {
+	db := database.GetDatabase()
+
+	var p models.Book
+
+	err := c.ShouldBindJSON(&p)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"Error": "Cannot bind JSON: " + err.Error(),
+		})
+		return
+	}
+
+	err = db.Create(&p).Error
+	if err != nil {
+		c.JSON(400, gin.H{
+			"Error": "Error creating the book: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, p)
+}
+
+func GetAllBooks(c *gin.Context) {
+	db := database.GetDatabase()
+	var p []models.Book
+	err := db.Find(&p).Error
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"Error": "Cannot find book with id: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, p)
 }
