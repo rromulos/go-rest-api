@@ -69,3 +69,27 @@ func GetAllBooks(c *gin.Context) {
 
 	c.JSON(200, p)
 }
+
+func DeleteBook(c *gin.Context) {
+	id := c.Param("id")
+	newid, err := strconv.Atoi(id)
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"Error": "ID Has to be an integer",
+		})
+		return
+	}
+
+	db := database.GetDatabase()
+	err = db.Delete(&models.Book{}, newid).Error
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"Error": "Error deleting the book: " + err.Error(),
+		})
+		return
+	}
+
+	c.Status(204)
+}
